@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body,
+        table,
+        div {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #ccc;
+        }
+
+        .box {
+            width: 418px;
+            height: 50px;
+            margin: 50px auto 0;
+            background-color: burlywood;
+            font-size: 30px;
+            text-align: center;
+            line-height: 50px;
+            color: aqua;
+        }
+
+        .tab {
+            /* width: 400px;
+            height: 400px; */
+            margin: auto;
+            background-color: burlywood;
+        }
+
+        /* tr{
+            
+            
+        } */
+        td {
+            width: 100px;
+            height: 100px;
+            /* background-color: red; */
+            border-radius: 10px;
+            font-size: 50px;
+            color: #000;
+            text-align: center;
+            line-height: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box"></div>
+    <table class="tab">
+        <!-- <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr> -->
+    </table>
+    <audio id="audio" src="./music/气泡.mp3"></audio>
+    <audio id="audio1" src="./music/笑声.mp3"></audio>
+    <audio id="audio2" src="./music/欢快轻松.mp3"></audio>
+</body>
+<script>
+    let start = false;
+    let json = {
+        //生成结构
+        init: function () {
+            let tab = document.querySelector('.tab');
+            let html = '';
+            let id = 0;
+            for (let i = 0; i < 4; i++) {
+                html += `<tr>`;
+                for (let j = 0; j < 4; j++) {
+                    html += `<td id='${++id}'></td>`
+                }
+                html += `</tr>`;
+            }
+            tab.innerHTML = html;
+            this.randomGrid();
+            this.randomGrid();
+            this.color();
+        },
+        //随机数
+        randomNum: function (n, m) {
+            return parseInt(Math.random() * (m - n + 1) + n);
+        },
+        //随机生成数字
+        randomGrid: function () {
+            let num = json.randomNum(1, 16);
+            // console.log(num)
+            let oGrid = document.getElementById(num);
+            if (oGrid.innerText == '') {
+                oGrid.innerText = this.randomNum(1, 2) * 2;
+            } else {
+                this.randomGrid();
+            }
+        },
+        //上键
+        top: function () {
+            for (let i = 1; i <= 4; i++) {
+                for (let j = i; j <= i + 12; j += 4) {
+                    for (let k = j; k > 4; k -= 4) {
+                        this.change(document.getElementById(k - 4), document.getElementById(k));
+                    }
+                }
+            }
+        },
+        //下键
+        bottom: function () {
+            for (let i = 1; i <= 4; i++) {
+                for (let j = i + 12; j >= i; j -= 4) {
+                    for (let k = j; k < 13; k += 4) {
+                        this.change(document.getElementById(k + 4), document.getElementById(k));
+                    }
+                }
+            }
+        },
+        //左键
+        left: function () {
+            for (let i = 1; i <= 13; i += 4) {
+                for (let j = i; j <= i + 3; j++) {
+                    for (let k = j; k > i; k--) {
+                        this.change(document.getElementById(k - 1), document.getElementById(k));
+                    }
+                }
+            }
+        },
+        //右键
+        right: function () {
+            for (let i = 1; i <= 13; i += 4) {
+                for (let j = i + 4; j >= i; j--) {
+                    for (let k = j; k < i + 3; k++) {
+                        this.change(document.getElementById(k + 1), document.getElementById(k));
+                    }
+                }
+            }
+        },
+        //移动碰撞和合并
+        change: function (before, after) {
+            // console.log(before);
+            // console.log(after);
+            if (before.innerText == '' && after.innerText != '') {
+                before.innerText = after.innerText;
+                after.innerText = '';
+                start = true;
+            }
+            if (before.innerText != '' && before.innerText == after.innerText) {
+                before.innerText *= 2;
+                after.innerText = '';
+                start = true;
+                document.getElementById("audio").play();
+            }
+            // if(before.innerText != '' && after.innerText != '' && !start){
+            //     console.log(start);
+            // }
+            // if (!start) {
+            //     if (before.innerText != '' && after.innerText != '') {
+            //         if (before.innerText != after.innerText) {
+            //             console.log(start);
+            //         }
+            //     }
+            // }
+
+        },
+        //颜色
+        color: function () {
+            let col = { '': '#fff', 2: '#0f0', 4: '#f00', 8: '#00f', 16: '#082567', 32: '#20b2aa', 64: '#553200', 128: '#ff6347', 256: '#63c', 512: '#f09', 1024: '#903', 2048: '#60f', 4096: '#c06' };
+            let score = 0;
+            for (let i = 1; i <= 16; i++) {
+                let oGrid = document.getElementById(i);
+                oGrid.style.backgroundColor = col[oGrid.innerText];
+                score += oGrid.innerText * 2;
+            }
+            if (score % 100 == 0) {
+                document.getElementById("audio1").play();
+            }
+            let box = document.querySelector('.box');
+            box.innerHTML = '分数' + score;
+        }
+    }
+    window.onload = json.init();
+    // document.getElementById("audio2").play();
+    //键盘事件
+    document.addEventListener('keydown', function (e) {
+        // console.log(e.keyCode)
+        if (/37/.test(e.keyCode)) { json.left(); }
+        if (/38/.test(e.keyCode)) { json.top(); }
+        if (/39/.test(e.keyCode)) { json.right(); }
+        if (/40/.test(e.keyCode)) { json.bottom(); }
+        if (/32/.test(e.keyCode)) { json.init(); }
+        if (start) { json.randomGrid(); }
+        start = false;
+        json.color();
+    })
+
+    // console.log(json.start)
+    // json.top()
+    // console.log(json.randomNum(1, 2) * 2)
+    // json.randomGrid()
+    // json.color()
+</script>
+
+</html>
